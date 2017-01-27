@@ -10,12 +10,14 @@ import java.util.Optional;
 import javafx.application.Application;
 import javafx.concurrent.Worker.State;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert.AlertType;
@@ -26,32 +28,22 @@ import netscape.javascript.JSObject;
 
 public class TMBlockly extends Application {
 	
-	ToolBar toolbar;
 	BlocklyBrowser blocklyBrowser;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		VBox root = new VBox();
-		root.setPrefHeight(Region.USE_COMPUTED_SIZE);
-		root.setPrefWidth(Region.USE_COMPUTED_SIZE);
-		
-		toolbar = new ToolBar();
-		root.getChildren().add(toolbar);
-		
 		blocklyBrowser = new BlocklyBrowser();
-		root.getChildren().add(blocklyBrowser);
 		
-		Scene scene = new Scene(root);
+		Scene scene = new Scene(blocklyBrowser);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("TMBlockly");
 		primaryStage.show();
 		
 		primaryStage.setOnCloseRequest(event->{
-    	JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
-    	win.setMember("tmb", new JSInterface());
-    	blocklyBrowser.getWebEngine().executeScript("tmb.save(Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace)));");
+	    	JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
+	    	win.setMember("tmb", new JSInterface());
+	    	blocklyBrowser.getWebEngine().executeScript("tmb.save(Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace)));");
 		});
-
 	}
 
 	public static void main(String[] args) {
@@ -91,6 +83,7 @@ public class TMBlockly extends Application {
 	}
 	
 	public static class BlocklyBrowser extends Region {
+		private ToolBar toolbar;
 		private WebView browser;
 		private WebEngine webEngine;
 
@@ -99,16 +92,15 @@ public class TMBlockly extends Application {
 		}
 
 		public BlocklyBrowser() {
+			toolbar = new ToolBar();
+			getChildren().add(toolbar);
+			
 			browser = new WebView();
-			browser.setMaxHeight(720);
-			browser.setMaxWidth(1080);
 			webEngine = browser.getEngine();
 
 			webEngine.setUserDataDirectory(new File(""));
 			webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 				if (newState == State.SUCCEEDED) {
-					JSObject win = (JSObject) webEngine.executeScript("window");
-					win.setMember("tmb", new JSInterface());
 					webEngine.executeScript(
 							"BlocklyStorage.loadXml_(\"<xml xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><block type=\\\"controls_if\\\" id=\\\"GB7b`T-8wmV_his#6yG8\\\" x=\\\"200\\\" y=\\\"150\\\"></block></xml>\",workspace);");
 				}
@@ -141,9 +133,11 @@ public class TMBlockly extends Application {
 
 		@Override
 		protected void layoutChildren() {
-			double w = getWidth();
-			double h = getHeight();
-			layoutInArea(browser, 0, 0, w, h, 0, HPos.CENTER, VPos.CENTER);
+	        double w = getWidth();
+	        double h = getHeight();
+	        double tbHeight = toolbar.prefHeight(w);
+	        layoutInArea(toolbar,0,0,w,tbHeight,0,HPos.CENTER,VPos.CENTER);
+	        layoutInArea(browser,0,tbHeight,w,h-tbHeight,0,HPos.CENTER,VPos.CENTER);
 		}
 
 		@Override
@@ -157,7 +151,7 @@ public class TMBlockly extends Application {
 		}
 	}
 	
-	public static class JSInterface{
+	public class JSInterface{
 		public void save(String xml){
 			System.out.println(xml);
 		}
