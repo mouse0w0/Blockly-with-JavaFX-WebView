@@ -1,6 +1,7 @@
 
 package me.mouse.tmblockly;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -10,16 +11,13 @@ import java.util.Optional;
 import javafx.application.Application;
 import javafx.concurrent.Worker.State;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToolBar;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -28,6 +26,7 @@ import netscape.javascript.JSObject;
 
 public class TMBlockly extends Application {
 	
+	static final File DEFAULT_SAVE_PATH = new File(System.getProperty("user.dir"),"newblock.xml");
 	BlocklyBrowser blocklyBrowser;
 
 	@Override
@@ -50,10 +49,29 @@ public class TMBlockly extends Application {
 		launch(args);
 	}
 	
-	public static String load(File file){
-		if(!file.exists()) return "";
-		
+	public static String loadAll(File file){
+		if (!file.exists())
+			return "";
+
 		StringBuilder builder = new StringBuilder();
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line+"\r\n");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (reader != null)
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+		
 		
 		return builder.toString();
 	}
@@ -82,7 +100,7 @@ public class TMBlockly extends Application {
 		}
 	}
 	
-	public static class BlocklyBrowser extends Region {
+	public class BlocklyBrowser extends Region {
 		private ToolBar toolbar;
 		private WebView browser;
 		private WebEngine webEngine;
@@ -101,8 +119,10 @@ public class TMBlockly extends Application {
 			webEngine.setUserDataDirectory(new File(""));
 			webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 				if (newState == State.SUCCEEDED) {
+			    	JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
+			    	win.setMember("txml", TMBlockly.loadAll(DEFAULT_SAVE_PATH));
 					webEngine.executeScript(
-							"BlocklyStorage.loadXml_(\"<xml xmlns=\\\"http://www.w3.org/1999/xhtml\\\"><block type=\\\"controls_if\\\" id=\\\"GB7b`T-8wmV_his#6yG8\\\" x=\\\"200\\\" y=\\\"150\\\"></block></xml>\",workspace);");
+							"BlocklyStorage.loadXml_(txml,workspace);");
 				}
 			});
 			webEngine.setOnAlert(event -> {
@@ -153,7 +173,7 @@ public class TMBlockly extends Application {
 	
 	public class JSInterface{
 		public void save(String xml){
-			System.out.println(xml);
+			TMBlockly.save(DEFAULT_SAVE_PATH, xml);
 		}
 	}
 }
