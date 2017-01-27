@@ -25,31 +25,32 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
 public class TMBlockly extends Application {
-	
-	static final File DEFAULT_SAVE_PATH = new File(System.getProperty("user.dir"),"newblock.xml");
+
+	static final File DEFAULT_SAVE_PATH = new File(System.getProperty("user.dir"), "newblock.xml");
 	BlocklyBrowser blocklyBrowser;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		blocklyBrowser = new BlocklyBrowser();
-		
+
 		Scene scene = new Scene(blocklyBrowser);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("TMBlockly");
 		primaryStage.show();
-		
-		primaryStage.setOnCloseRequest(event->{
-	    	JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
-	    	win.setMember("tmb", new JSInterface());
-	    	blocklyBrowser.getWebEngine().executeScript("tmb.save(Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace)));");
+
+		primaryStage.setOnCloseRequest(event -> {
+			JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
+			win.setMember("tmb", new JSInterface());
+			blocklyBrowser.getWebEngine()
+					.executeScript("tmb.save(Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace)));");
 		});
 	}
 
 	public static void main(String[] args) {
 		launch(args);
 	}
-	
-	public static String loadAll(File file){
+
+	public static String loadAll(File file) {
 		if (!file.exists())
 			return "";
 
@@ -59,7 +60,7 @@ public class TMBlockly extends Application {
 			reader = new BufferedReader(new FileReader(file));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				builder.append(line+"\r\n");
+				builder.append(line + "\r\n");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -71,21 +72,21 @@ public class TMBlockly extends Application {
 					e.printStackTrace();
 				}
 		}
-		
-		
+
 		return builder.toString();
 	}
-	
-	public static void save(File file,String str){
-		if(!file.getParentFile().exists()) file.getParentFile().mkdirs();
-		
-		if(!file.exists())
+
+	public static void save(File file, String str) {
+		if (!file.getParentFile().exists())
+			file.getParentFile().mkdirs();
+
+		if (!file.exists())
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		
+
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(file);
@@ -93,13 +94,14 @@ public class TMBlockly extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			if(writer!=null)
+			if (writer != null)
 				try {
 					writer.close();
-				} catch (IOException e) {}
+				} catch (IOException e) {
+				}
 		}
 	}
-	
+
 	public class BlocklyBrowser extends Region {
 		private ToolBar toolbar;
 		private WebView browser;
@@ -112,17 +114,16 @@ public class TMBlockly extends Application {
 		public BlocklyBrowser() {
 			toolbar = new ToolBar();
 			getChildren().add(toolbar);
-			
+
 			browser = new WebView();
 			webEngine = browser.getEngine();
 
 			webEngine.setUserDataDirectory(new File(""));
 			webEngine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
 				if (newState == State.SUCCEEDED) {
-			    	JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
-			    	win.setMember("txml", TMBlockly.loadAll(DEFAULT_SAVE_PATH));
-					webEngine.executeScript(
-							"BlocklyStorage.loadXml_(txml,workspace);");
+					JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
+					win.setMember("txml", TMBlockly.loadAll(DEFAULT_SAVE_PATH));
+					webEngine.executeScript("BlocklyStorage.loadXml_(txml,workspace);");
 				}
 			});
 			webEngine.setOnAlert(event -> {
@@ -153,11 +154,11 @@ public class TMBlockly extends Application {
 
 		@Override
 		protected void layoutChildren() {
-	        double w = getWidth();
-	        double h = getHeight();
-	        double tbHeight = toolbar.prefHeight(w);
-	        layoutInArea(toolbar,0,0,w,tbHeight,0,HPos.CENTER,VPos.CENTER);
-	        layoutInArea(browser,0,tbHeight,w,h-tbHeight,0,HPos.CENTER,VPos.CENTER);
+			double w = getWidth();
+			double h = getHeight();
+			double tbHeight = toolbar.prefHeight(w);
+			layoutInArea(toolbar, 0, 0, w, tbHeight, 0, HPos.CENTER, VPos.CENTER);
+			layoutInArea(browser, 0, tbHeight, w, h - tbHeight, 0, HPos.CENTER, VPos.CENTER);
 		}
 
 		@Override
@@ -170,9 +171,9 @@ public class TMBlockly extends Application {
 			return 720;
 		}
 	}
-	
-	public class JSInterface{
-		public void save(String xml){
+
+	public class JSInterface {
+		public void save(String xml) {
 			TMBlockly.save(DEFAULT_SAVE_PATH, xml);
 		}
 	}
