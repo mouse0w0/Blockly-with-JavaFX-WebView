@@ -18,12 +18,14 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class TMBlockly extends Application {
+	
+	WebView browser;
+	WebEngine webEngine;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		
-		WebView browser = new WebView();
-		WebEngine webEngine = browser.getEngine();
+		browser = new WebView();
+		webEngine = browser.getEngine();
 		
 		webEngine.load(TMBlockly.class.getResource("index.html").toExternalForm());
 		webEngine.setOnAlert(new EventHandler<WebEvent<String>>() {
