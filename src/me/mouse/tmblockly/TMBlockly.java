@@ -51,8 +51,9 @@ public class TMBlockly extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		blocklyBrowser = new BlocklyBrowser();
 		blocklyBrowser.getWebEngine().getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
-			if (newState != State.SUCCEEDED) return;
-			blocklyBrowser.load(savePath);
+			if (newState == State.SUCCEEDED){
+				blocklyBrowser.load(savePath);
+			}
 		});
 
 		Scene scene = new Scene(blocklyBrowser);		
