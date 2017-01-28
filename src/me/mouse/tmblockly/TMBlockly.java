@@ -61,8 +61,6 @@ public class TMBlockly extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("TMBlockly");
 		primaryStage.show();
-
-
 	}
 
 	public static void main(String[] args) {
