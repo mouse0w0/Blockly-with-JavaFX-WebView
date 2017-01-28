@@ -1,5 +1,5 @@
 
-package me.mouse.tmblockly;
+package me.mouse.fxblockly;
 
 import java.io.BufferedReader;
 import java.io.File;
