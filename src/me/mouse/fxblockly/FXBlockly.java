@@ -23,7 +23,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
-public class TMBlockly extends Application {
+public class FXBlockly extends Application {
 
 	static final File DEFAULT_SAVE_PATH = new File(System.getProperty("user.dir"), "newblock.xml");
 	
@@ -37,11 +37,11 @@ public class TMBlockly extends Application {
 		this.savePath = savePath;
 	}
 
-	public TMBlockly() {
+	public FXBlockly() {
 		this(DEFAULT_SAVE_PATH);
 	}
 	
-	public TMBlockly(File savePath){
+	public FXBlockly(File savePath){
 		this.savePath = savePath;
 	}
 	
@@ -59,7 +59,7 @@ public class TMBlockly extends Application {
 		Scene scene = new Scene(blocklyBrowser);		
 		primaryStage.setOnCloseRequest(event -> {blocklyBrowser.save(savePath); System.out.println(blocklyBrowser.generateJavaCode());});
 		primaryStage.setScene(scene);
-		primaryStage.setTitle("TMBlockly");
+		primaryStage.setTitle("FXBlockly");
 		primaryStage.show();
 	}
 
@@ -160,7 +160,7 @@ public class TMBlockly extends Application {
 				return arg.isPresent() ? arg.get() : "";
 			});
 
-			webEngine.load(TMBlockly.class.getResource("index.html").toExternalForm());
+			webEngine.load(FXBlockly.class.getResource("index.html").toExternalForm());
 
 			getChildren().add(browser);
 		}
@@ -186,11 +186,11 @@ public class TMBlockly extends Application {
 		}
 		
 		public void save(File file){
-			TMBlockly.save(file, (String) getWebEngine().executeScript("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));"));
+			FXBlockly.save(file, (String) getWebEngine().executeScript("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));"));
 		}
 		
 		public void load(File file){
-			load(TMBlockly.loadAll(file));
+			load(FXBlockly.loadAll(file));
 		}
 		
 		public void load(String xml){
