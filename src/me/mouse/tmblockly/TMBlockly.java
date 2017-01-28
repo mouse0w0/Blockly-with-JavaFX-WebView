@@ -57,7 +57,7 @@ public class TMBlockly extends Application {
 		});
 
 		Scene scene = new Scene(blocklyBrowser);		
-		primaryStage.setOnCloseRequest(event -> {blocklyBrowser.save(savePath);});
+		primaryStage.setOnCloseRequest(event -> {blocklyBrowser.save(savePath); System.out.println(blocklyBrowser.generateJavaCode());});
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("TMBlockly");
 		primaryStage.show();
@@ -186,9 +186,7 @@ public class TMBlockly extends Application {
 		}
 		
 		public void save(File file){
-			JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
-			win.setMember("save", new JSInterface());
-			getWebEngine().executeScript("save.save(Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace)));");
+			TMBlockly.save(file, (String) getWebEngine().executeScript("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));"));
 		}
 		
 		public void load(File file){
@@ -200,11 +198,9 @@ public class TMBlockly extends Application {
 			win.setMember("txml", xml);
 			webEngine.executeScript("BlocklyStorage.loadXml_(txml,workspace);");
 		}
-	}
-	
-	public class JSInterface{
-		public void save(String xml) {
-			TMBlockly.save(savePath, xml);
+		
+		public String generateJavaCode(){
+			return (String) webEngine.executeScript("Blockly.Java.workspaceToCode(workspace);");
 		}
 	}
 }
