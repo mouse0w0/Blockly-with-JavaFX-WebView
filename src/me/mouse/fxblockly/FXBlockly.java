@@ -196,7 +196,7 @@ public class FXBlockly extends Application {
 		public void load(String xml){
 			JSObject win = (JSObject) blocklyBrowser.getWebEngine().executeScript("window");
 			win.setMember("txml", xml);
-			webEngine.executeScript("BlocklyStorage.loadXml_(txml,workspace);");
+			webEngine.executeScript("Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(txml), workspace);");
 		}
 		
 		public String generateJavaCode(){
