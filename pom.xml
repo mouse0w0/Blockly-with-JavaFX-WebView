@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>team.unstudio</groupId>
+	<artifactId>fxblockly</artifactId>
+	<version>1.0.0-RELEASE</version>
+	<packaging>jar</packaging>
+
+	<name>FXBlockly</name>
+
+	<properties>
+		<gpg.skip>true</gpg.skip>
+		<javadoc.skip>true</javadoc.skip>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>       
+        <maven.compiler.target>1.8</maven.compiler.target>       
+        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion> 
+	</properties>
+	
+    <licenses>
+        <license>
+            <name>AGPLv3</name>
+            <url>https://www.gnu.org/licenses/agpl.html</url>
+        </license>
+    </licenses>
+
+	<repositories>
+		<repository>
+			<id>elmakers-repo</id>
+			<url>http://maven.elmakers.com/repository</url>
+		</repository>
+	</repositories>
+	
+	<build>
+		<defaultGoal>clean install</defaultGoal>
+		<finalName>${project.name}</finalName>
+	</build>
+</project>
