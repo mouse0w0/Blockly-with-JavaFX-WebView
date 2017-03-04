@@ -45,7 +45,7 @@ public class FXBlockly extends Application {
 		this.savePath = savePath;
 	}
 	
-	BlocklyBrowser blocklyBrowser;
+	private BlocklyBrowser blocklyBrowser;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -120,7 +120,6 @@ public class FXBlockly extends Application {
 	}
 
 	public class BlocklyBrowser extends Region {
-		//private Region region;
 		private WebView browser;
 		private WebEngine webEngine;
 
@@ -129,13 +128,6 @@ public class FXBlockly extends Application {
 		}
 
 		public BlocklyBrowser() {
-			/*MenuBar node = new MenuBar();
-			Menu menu = new Menu("编辑");
-			menu.getItems().add(new MenuItem("保存"));
-			node.getMenus().add(menu);
-			region = node;
-			getChildren().add(region);*/
-
 			browser = new WebView();
 			webEngine = browser.getEngine();
 
@@ -159,6 +151,11 @@ public class FXBlockly extends Application {
 				Optional<String> arg = dialog.showAndWait();
 				return arg.isPresent() ? arg.get() : "";
 			});
+			//防止网页跳转
+			webEngine.locationProperty().addListener((obs,oldValue,newValue)->{
+				if(newValue.equals("index.html")) return;
+				webEngine.load(FXBlockly.class.getResource("index.html").toExternalForm());
+			});
 
 			webEngine.load(FXBlockly.class.getResource("index.html").toExternalForm());
 
@@ -168,11 +165,6 @@ public class FXBlockly extends Application {
 		@Override
 		protected void layoutChildren() {
 			layoutInArea(browser, 0, 0, getWidth(), getHeight(), 0, HPos.CENTER, VPos.CENTER);
-			/*double w = getWidth();
-			double h = getHeight();
-			double rh = region.prefHeight(w);
-			layoutInArea(region, 0, 0, w, rh, 0, HPos.CENTER, VPos.CENTER);
-			layoutInArea(browser, 0, rh, w, h - rh, 0, HPos.CENTER, VPos.CENTER);*/
 		}
 
 		@Override
