@@ -89,7 +89,7 @@ public class FXBlockly extends Application {
                 Alert alert = new Alert(AlertType.CONFIRMATION, arg0);
                 alert.setTitle(arg0);
                 alert.setHeaderText(null);
-                return alert.showAndWait().get() == ButtonType.OK;
+                return alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK;
             });
             webEngine.setPromptHandler(param -> {
                 TextInputDialog dialog = new TextInputDialog(param.getDefaultValue());
@@ -97,7 +97,7 @@ public class FXBlockly extends Application {
                 dialog.setTitle(param.getMessage());
                 dialog.setHeaderText(null);
                 Optional<String> arg = dialog.showAndWait();
-                return arg.isPresent() ? arg.get() : "";
+                return arg.orElse("");
             });
             //防止网页跳转
             webEngine.locationProperty().addListener((obs, oldValue, newValue) -> {
